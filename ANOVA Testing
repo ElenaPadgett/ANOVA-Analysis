@@ -1,0 +1,47 @@
+library(palmerpenguins)
+library(tidyverse)
+library(psych)
+library(tidymodels)
+library(AICcmodavg)
+
+#Size up the data
+dim(penguins)
+
+#Check for missing values
+describe(penguins)
+
+#Remove the 11 rows that have missing observations
+penguins = na.omit(penguins)
+
+#The clean dataset has 333 observations and 7 variables
+dim(penguins)
+
+#Graphical Analysis
+penguins %>% select (body_mass_g, species) %>% describeBy(group = 'species')
+
+ggplot(data=penguins, aes(x=body_mass_g)) +
+  geom_histogram() +
+  facet_grid(~species)
+  
+penguins %>% select (body_mass_g, island) %>% describeBy(group = 'island')
+
+ggplot(data=penguins, aes(x=body_mass_g)) +
+  geom_histogram() +
+  facet_grid(~island)
+  
+#Check the assumption of normality
+qqnorm(penguins$body_mass_g, pch = 1, frame = FALSE)
+qqline(penguins$body_mass_g, col = "steelblue", lwd = 2)
+  
+#One-way ANOVA test (type of species)
+anova1 <- aov(body_mass_g ~ species, data=penguins)
+summary(anova1)
+
+#Two-way ANOVA test
+twowayanova <- aov(body_mass_g ~ species*island, data=penguins)
+summary(twowayanova)
+
+#Tukey’s Honestly Significant Difference (Tukey’s HSD) test for pairwise comparisons
+tukeytwoway<-TukeyHSD(anova1)
+tukeytwoway
+plot(tukeytwoway, las=1)
