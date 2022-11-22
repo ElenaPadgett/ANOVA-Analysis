@@ -2,7 +2,6 @@ library(palmerpenguins)
 library(tidyverse)
 library(psych)
 library(tidymodels)
-library(AICcmodavg)
 
 #Size up the data
 dim(penguins)
@@ -29,10 +28,6 @@ ggplot(data=penguins, aes(x=body_mass_g)) +
   geom_histogram() +
   facet_grid(~island)
   
-#Check the assumption of normality
-qqnorm(penguins$body_mass_g, pch = 1, frame = FALSE)
-qqline(penguins$body_mass_g, col = "steelblue", lwd = 2)
-  
 #One-way ANOVA test (type of species)
 anova1 <- aov(body_mass_g ~ species, data=penguins)
 summary(anova1)
@@ -41,7 +36,18 @@ summary(anova1)
 twowayanova <- aov(body_mass_g ~ species*island, data=penguins)
 summary(twowayanova)
 
-#Tukey’s Honestly Significant Difference (Tukey’s HSD) test for pairwise comparisons
+#Check if residuals are normally distributed with the quantile-quantile plot.
+res <- resid(anova1)
+qqnorm(res)
+qqline(res, col = "red")
+
+#Create density plot of residuals
+plot(density(res))
+
+#Check if all groups have equal error variances
+bartlett.test(body_mass_g ~ species, data=penguins)
+
+#Tukey’s Honestly Significant Difference (Tukey’s HSD) post-hoc test for pairwise comparisons
 tukeytwoway<-TukeyHSD(anova1)
 tukeytwoway
 plot(tukeytwoway, las=1)
