@@ -1,1 +1,72 @@
+library(palmerpenguins)
+library(tidyverse)
+library(psych)
+library(tidymodels)
+
+describe(penguins)
+penguins = na.omit(penguins)
+dim(penguins)
+
+#Visualize the relationship between weight (body_mass_g) and sex.
+penguins %>% select (body_mass_g, sex) %>% 
+  describeBy(group = 'sex')
+
+ggplot(data=penguins, aes(x=sex, y=body_mass_g)) +
+  geom_boxplot()
+
+ggplot(data=penguins, aes(x=body_mass_g)) +
+  geom_histogram() +
+  facet_grid(~sex)
+  
+#Is there a significant difference in weight between female and male penguins?
+t.test(body_mass_g ~ sex, data=penguins)
+
+#Visualize the relationship between bill length and weight.
+ggplot(data=penguins, aes(x=bill_length_mm, y=body_mass_g)) +
+  geom_point() +
+  xlab('Bill Length (mm)') + ylab('Weight (g)') +
+  ggtitle('Relationship between bill length and weight')
+  
+#Linear Regression
+penguin_regression <- lm(body_mass_g ~ bill_length_mm, data=penguins)
+summary(penguin_regression)
+
+#Fit the regression line over a scatterplot
+ggplot(data=penguins, aes(x=bill_length_mm, y=body_mass_g)) +
+  geom_point() + 
+  xlab('Bill Length (mm)') + ylab('Weight(g)')+
+  ggtitle('Relationship between bill length and weight') +
+  geom_smooth(method=lm)
+  
+#Multiple regression
+penguin_regression2 <- lm(body_mass_g ~ bill_length_mm+species+sex, data=penguins)
+summary(penguin_regression2)
+
+#Training the model
+#Split the regression model into training and testing subsets. 
+peng_split <- initial_split(penguins)
+peng_train <- training(peng_split)
+peng_test <- testing(peng_split)
+
+dim(peng_train)
+dim(peng_test)
+
+#Training the model 
+lm_spec <- linear_reg()
+lm_fit <- lm_spec %>% 
+  fit(body_mass_g ~ bill_length_mm+species+sex, data = peng_train)
+  
+#Get the coefficients and p-values
+tidy(lm_fit)
+
+#Get performance metrics
+glance(lm_fit)
+
+#Apply the model to the test dataset, make predictions, and find r-squared.
+peng_results <- predict(lm_fit, new_data=peng_test) %>% 
+  bind_cols(peng_test)
+peng_results
+  
+rsq(data=peng_results, truth=body_mass_g, estimate=.pred)
+
 
