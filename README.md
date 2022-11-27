@@ -1,5 +1,5 @@
-# ANOVA-Analysis
-The goal of the analysis is to test the association between different variables in a dataset.  
+# ANOVA and Regression Analysis
+The goal of the analysis is to test the association between different variables in a dataset. The techniques used are ANOVA testing, t-test, and linear regression. 
 
 The data comes from R package palmerpenguins.
 
@@ -12,3 +12,5 @@ Full citation:
 
 According to R Documentation, the dataset "includes measurements for penguin species, island in Palmer Archipelago, size (flipper length, body mass, bill dimensions), and sex.". 
 For full description of variables, type ?penguins
+
+The book "Advancing into Analytics: From Excel to Python and R" (2021, O'Reilly Media) by George Mount was invaluable reference resource in conducting the analysis. 
